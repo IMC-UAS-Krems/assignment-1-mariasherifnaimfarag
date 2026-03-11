@@ -2,7 +2,7 @@
 # Music Streaming Platform - Programming II Assignment
 
 A Python 3.10+ object-oriented programming exercise. Your task is to implement the streaming platform domain model based on the specifications below.
-
+   
 ---
 
 ## 🎯 Your Assignment
