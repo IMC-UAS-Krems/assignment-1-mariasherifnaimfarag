@@ -18,7 +18,7 @@ class StreamingPlatform:
         self._artists={}
         self._albums={}
         self._playlists={}
-        self._sessions={}
+        self._sessions=[]
 
     def add_track (self,track)->None:
         pass
