@@ -7,7 +7,7 @@ and provides query methods for analytics.
 Classes to implement:
   - StreamingPlatform
 """
-from streaming.artists import Artist
+
 
 
 class StreamingPlatform:
@@ -40,9 +40,9 @@ class StreamingPlatform:
         pass
     def get_album(self,album_id)->None:
         pass
-    def all_users(self)->list[User]:
+    def all_users(self):
         pass
-    def all_tracks(self)->list[User]:
+    def all_tracks(self):
         pass
 
 

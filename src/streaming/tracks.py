@@ -16,7 +16,7 @@ Classes to implement:
 
 
 import abc
-from .artists import Artist
+
 from datetime import date
 class Track(abc.ABC):
     def __init__(self,track_id:str,title: str,duration_seconds: int,genre:str):
@@ -36,7 +36,7 @@ class Track(abc.ABC):
         return self.track_id == other.track_id
 
 class Song(Track):
-    def __init__(self, track_id: str, title: str, duration_seconds: int, genre: str, artist: Artist):
+    def __init__(self, track_id: str, title: str, duration_seconds: int, genre: str, artist):
         super().__init__(track_id, title, duration_seconds, genre)
         self.artist = artist
 
@@ -44,12 +44,12 @@ class Song(Track):
 
 class SingleRelease(Song):
     def __init__(self, track_id: str, title: str, duration_seconds: int, genre: str,
-                 artist: Artist, release_date: date):
+                 artist, release_date: date):
         super().__init__(track_id, title, duration_seconds, genre, artist)
         self.release_date = release_date
 
 class AlbumTrack(Song):
-    def __init__(self, track_id: str, title: str, duration_seconds: int, genre: str,artist: Artist,track_number: int,album=None):
+    def __init__(self, track_id: str, title: str, duration_seconds: int, genre: str,artist,track_number: int,album=None):
         super().__init__(track_id, title, duration_seconds, genre,artist)
         self.track_number = track_number
         self.album = album

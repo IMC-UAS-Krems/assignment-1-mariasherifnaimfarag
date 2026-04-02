@@ -7,13 +7,13 @@ Classes to implement:
   - Playlist
     - CollaborativePlaylist
 """
-from users import User
+from .users import User
 class Playlist:
     def __init__(self,playlist_id: str,name: str,owner: User):
         self.playlist_id=playlist_id
         self.name=name
         self.owner=owner
-        self.tracks=list[Track]
+        self.tracks=[]
 
     def add_track(self,track)->None:
         pass
