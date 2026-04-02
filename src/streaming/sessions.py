@@ -8,10 +8,10 @@ Classes to implement:
 """
 from .users import User
 from .tracks import Track
-from datetime import date
+from datetime import datetime
 
 class ListeningSession:
-    def __init__(self,session_id: str,user: User,track: Track,timestamp: date,duration_listened_seconds: int):
+    def __init__(self,session_id: str,user: User,track: Track,timestamp: datetime,duration_listened_seconds: int):
         self.session_id = session_id
         self.user = user
         self.track = track
@@ -19,4 +19,4 @@ class ListeningSession:
         self.duration_listened_seconds = duration_listened_seconds
 
     def duration_listened_minutes (self)->float:
-        pass
+        return self.duration_listened_seconds / 60
