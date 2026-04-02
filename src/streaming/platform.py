@@ -44,7 +44,7 @@ class StreamingPlatform:
         pass
     def all_tracks(self)->list[User]:
         pass
-    
+
 
 
 
