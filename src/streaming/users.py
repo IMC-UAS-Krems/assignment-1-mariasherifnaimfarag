@@ -61,7 +61,7 @@ class FamilyAccountUser(User):
             self.sub_users.append(sub_user)
 
 
-        self.sub_users.append(sub_user)
+
 
 
     def all_members(self)-> List["User"]:

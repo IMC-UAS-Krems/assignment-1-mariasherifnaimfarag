@@ -43,7 +43,7 @@ class Track(ABC):
 class Song(Track):
     def __init__(self, track_id: str, title: str, duration_seconds: int, genre: str, artist: Artist):
         super().__init__(track_id, title, duration_seconds, genre)
-        self.artist = Artist
+        self.artist = artist
 
 
 

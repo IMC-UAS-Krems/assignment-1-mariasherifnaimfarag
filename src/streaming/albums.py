@@ -21,9 +21,10 @@ class Album :
         self.tracks: List[AlbumTrack] =[]
 
     def add_track(self,track: AlbumTrack)->None:
-        if track not in self.tracks:
-            self.tracks.append(track)
-            track.album = self #this for the album that it always belongs to the track
+        track.album = self #this for the album that it always belongs to the track
+        self.tracks.append(track)
+        self.tracks.sort(key=lambda t: t.track_number)
+
 
 
     def track_ids(self)->Set[str]:
