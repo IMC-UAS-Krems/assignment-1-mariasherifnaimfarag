@@ -7,6 +7,10 @@ Classes to implement:
   - Album
 """
 from .artists import Artist
+from typing import List , Set
+from .tracks import AlbumTrack
+from .tracks import Track
+
 
 class Album :
     def __init__(self,album_id: str,title: str, artist: Artist,release_year: int):
@@ -14,14 +18,15 @@ class Album :
         self.title = title
         self.artist = artist
         self.release_year = release_year
-        self.tracks=[]
+        self.tracks: List[AlbumTrack] =[]
 
-    def add_track(self,track)->None:
-        track.album = self
-        self.tracks.append(track)
-        self.tracks.sort(key=lambda t: t.track_number)
+    def add_track(self,track: AlbumTrack)->None:
+        if track not in self.tracks:
+            self.tracks.append(track)
+            track.album = self #this for the album that it always belongs to the track
 
-    def track_ids(self)->set[str]:
+
+    def track_ids(self)->Set[str]:
         return {track.track_id for track in self.tracks}
 
     def duration_seconds(self)->int:

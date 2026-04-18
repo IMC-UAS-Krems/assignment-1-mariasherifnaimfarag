@@ -7,7 +7,8 @@ Classes to implement:
   - Artist
 """
 
-from .tracks import Track
+from .tracks import  Track
+from typing import List
 
 
 class Artist:
@@ -15,11 +16,13 @@ class Artist:
         self.artist_id = artist_id
         self.name = name
         self.genre = genre
-        self.tracks = []
+        self.tracks : List[Track] = []
 
     def add_track (self, track: Track)->None:
-        self.tracks.append(track)
+        if track not in self.tracks:
+            self.tracks.append(track)
     def track_count (self):
         return len(self.tracks)
+
 
 

@@ -15,10 +15,16 @@ Classes to implement:
 """
 
 
-import abc
-
+from abc import ABC
+"""https://www.geeksforgeeks.org/python/abstract-classes-in-python/"""
+from .artists import Artist
 from datetime import date
-class Track(abc.ABC):
+from typing import TYPE_CHECKING, Optional
+if TYPE_CHECKING:
+    from .albums import Album
+
+
+class Track(ABC):
     def __init__(self,track_id:str,title: str,duration_seconds: int,genre:str):
         self.track_id = track_id
         self.title = title
@@ -27,29 +33,28 @@ class Track(abc.ABC):
 
 
     def duration_minutes(self) -> float:
-        """Abstract method to be implemented by all concrete tracks."""
         return self.duration_seconds / 60.0
 
-    def __eq__(self,other):
+    def __eq__(self,other)->bool:
         if not isinstance(other,Track):
             return False
         return self.track_id == other.track_id
 
 class Song(Track):
-    def __init__(self, track_id: str, title: str, duration_seconds: int, genre: str, artist):
+    def __init__(self, track_id: str, title: str, duration_seconds: int, genre: str, artist: Artist):
         super().__init__(track_id, title, duration_seconds, genre)
-        self.artist = artist
+        self.artist = Artist
 
 
 
 class SingleRelease(Song):
     def __init__(self, track_id: str, title: str, duration_seconds: int, genre: str,
-                 artist, release_date: date):
+                 artist: Artist, release_date: date):
         super().__init__(track_id, title, duration_seconds, genre, artist)
         self.release_date = release_date
 
 class AlbumTrack(Song):
-    def __init__(self, track_id: str, title: str, duration_seconds: int, genre: str,artist,track_number: int,album=None):
+    def __init__(self, track_id: str, title: str, duration_seconds: int, genre: str,artist: Artist,track_number: int,album:"Optional['Album']" = None):
         super().__init__(track_id, title, duration_seconds, genre,artist)
         self.track_number = track_number
         self.album = album

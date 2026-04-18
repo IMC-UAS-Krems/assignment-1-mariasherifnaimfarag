@@ -7,13 +7,15 @@ Classes to implement:
   - Playlist
     - CollaborativePlaylist
 """
+from .tracks import Track
 from .users import User
+from typing import List
 class Playlist:
     def __init__(self,playlist_id: str,name: str,owner: User):
         self.playlist_id=playlist_id
         self.name=name
         self.owner=owner
-        self.tracks=[]
+        self.tracks : List[Track] = []
 
     def add_track(self,track)->None:
        if track not in self.tracks:
@@ -31,15 +33,13 @@ class Playlist:
 class CollaborativePlaylist(Playlist):
     def __init__(self, playlist_id: str, name: str, owner: User):
         super().__init__(playlist_id, name, owner)
-        self.contributors=[owner]
+        self.contributors: List[User] = []
 
     def add_contributor(self,user)->None:
        if user not in self.contributors:
             self.contributors.append(user)
 
     def remove_contributor(self,user)->None:
-        if user == self.owner:
-            return
         if user in self.contributors:
             self.contributors.remove(user)
 
