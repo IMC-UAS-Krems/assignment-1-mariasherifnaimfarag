@@ -7,10 +7,10 @@ and provides query methods for analytics.
 Classes to implement:
   - StreamingPlatform
 """
-from typing import Optional
+from typing import   Dict , List
 from streaming.sessions import ListeningSession
 from streaming.tracks import Track , Song
-from streaming.users import User , PremiumUser
+from streaming.users import User , PremiumUser, FamilyMember
 from streaming.artists import Artist
 from streaming.playlists import Playlist , CollaborativePlaylist
 from streaming.albums import Album
@@ -20,17 +20,18 @@ from datetime import datetime , timedelta
 class StreamingPlatform:
     def __init__(self,name: str):
         self.name = name
-        self._catalogue: dict[str, Track] = {}
-        self._users: dict[str, User] = {}
-        self._artists: dict[str, Artist] = {}
-        self._albums: dict[str, Album] = {}
-        self._playlists: dict[str, Playlist] = {}
-        self._sessions: list[ListeningSession]= []
-
+        self._catalogue: Dict[str, Track] = {}
+        self._users: Dict[str, User] = {}
+        self._artists: Dict[str, Artist] = {}
+        self._albums: Dict[str, Album] = {}
+        self._playlists: Dict[str, Playlist] = {}
+        self._sessions: List[ListeningSession]= []
+#q1 total_listening_time_minutes
     def total_listening_time_minutes(self,start: datetime, end: datetime) -> float:
         return sum(session.duration_listened_minutes()
                    for session in self._sessions
-                   if start<= session.timestamp <= end)
+                    if start<= session.timestamp <= end)
+#q2 avg_unique_tracks_per_premium_user
     def avg_unique_tracks_per_premium_user(self,days: int = 30) -> float:
         premium_users = [u for u in self._users.values() if isinstance(u, PremiumUser)]
 
@@ -47,7 +48,7 @@ class StreamingPlatform:
             }
             total_unique_tracks += len(unique_tracks)
         return total_unique_tracks / len(premium_users)
-
+#q3 track_with_most_distinct_listeners
     def track_with_most_distinct_listeners(self) -> Track | None:
         if not self._sessions:
             return None
@@ -65,26 +66,33 @@ class StreamingPlatform:
         most_popular_id = max(listener_map, key=lambda tid: len(listener_map[tid]))
 
         return self._catalogue.get(most_popular_id)
+#q4 avg_session_duration_by_user_type
     def avg_session_duration_by_user_type(self) -> list[tuple[str, float]]:
         times = {}
         for session in self._sessions:
             user_type_name = type(session.user).__name__
-            if not user_type_name in times:
-                times[user_type_name] = [0.0,0]
-            times[user_type_name] += session.duration_listened_seconds
+            if  user_type_name not in times:
+                times[user_type_name] = [0.0, 0]
+            times[user_type_name][0] += session.duration_listened_seconds
             times[user_type_name][1] += 1
         results = []
         for type_name, data in times.items():
-                avg_seconds = data / data[1]
+                avg_seconds = data[0] / data[1]
                 results.append((type_name, avg_seconds))
         results.sort(key=lambda item: item[1], reverse=True)
         return results
-    def total_listening_time_underage_sub_users_minutes(self,age_threshold: int = 18) -> float:
-        the_only_track = set()
+
+#q5 total_listening_time_underage_sub_users_minutes
+    def total_listening_time_underage_sub_users_minutes(self, age_threshold: int = 18) -> float:
+        total_minutes = 0.0
+
         for session in self._sessions:
-            if session.user.age < age_threshold:
-                the_only_track.add(session.track.track_id)
-        return len(the_only_track)
+            if isinstance(session.user, FamilyMember) and session.user.age < age_threshold:
+                total_minutes += session.duration_listened_seconds / 60.0
+
+        return total_minutes
+
+#q6 top_artists_by_listening_time
     def top_artists_by_listening_time(self, n: int = 5) -> list[tuple[Artist, float]]:
         count = 0
         artist_times = {}
@@ -104,7 +112,7 @@ class StreamingPlatform:
             else:
                 break
         return results
-
+#q7 user_top_genre
     def user_top_genre(self, user_id: str) -> tuple[str, float] | None :
         user = self._users.get(user_id)
         if not user or not user.sessions:
@@ -123,7 +131,7 @@ class StreamingPlatform:
 
         percentage = (max_time / total_time) * 100
         return top_genre, percentage
-
+#q8 collaborative_playlists_with_many_artists
     def collaborative_playlists_with_many_artists(self,threshold: int = 3) -> list[CollaborativePlaylist]:
         results = []
         for playlist in self._playlists.values():
@@ -136,7 +144,7 @@ class StreamingPlatform:
                 if len(unique_artists) > threshold:
                     results.append(playlist)
         return results
-
+#q9 avg_tracks_per_playlist_type
     def avg_tracks_per_playlist_type(self) -> dict[str, float] :
         p_total, p_num = 0, 0
         cp_total, cp_num = 0, 0
@@ -151,6 +159,7 @@ class StreamingPlatform:
             "Playlist": p_total / p_num if p_num > 0 else 0.0,
             "CollaborativePlaylist": cp_total / cp_num if cp_num > 0 else 0.0
         }
+#q10 users_who_completed_albums
     def users_who_completed_albums(self) -> list[tuple[User, list[str]]]:
         results = []
         for user in self.all_users():
@@ -191,17 +200,17 @@ class StreamingPlatform:
     def record_session(self,session: 'ListeningSession')->None:
         self._sessions.append(session)
         session.user.add_session(session)
-    def get_track(self,track_id: str)-> Optional[Track]:
+    def get_track(self,track_id: str)->Track | None:
         return self._catalogue.get(track_id)
-    def get_user(self,user_id=None)->None:
+    def get_user(self,user_id: str)->User| None:
         return self._users.get(user_id)
-    def get_artist(self,artist_id=None)->None:
+    def get_artist(self,artist_id=None)->Artist | None:
         return self._artists.get(artist_id)
-    def get_album(self,album_id)->None:
+    def get_album(self,album_id)->Album | None:
         return self._albums.get(album_id)
-    def all_users(self)-> list[User]:
+    def all_users(self)-> List[User]:
         return list(self._users.values())
-    def all_tracks(self)-> list[Track]:
+    def all_tracks(self)-> List[Track]:
         return list(self._catalogue.values())
 
 
