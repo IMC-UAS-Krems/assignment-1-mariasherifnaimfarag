@@ -28,7 +28,16 @@ class StreamingPlatform:
         self._sessions: List[ListeningSession]= []
 #q1 total_listening_time_minutes
     def total_listening_time_minutes(self,start: datetime, end: datetime) -> float:
+        """
+              Calculate total listening time in a certain a time window.
 
+              Args:
+                  start: Start of the time .
+                  end: End of the time .
+
+              Returns:
+                  float: the total listening time in minutes.
+              """
         total_seconds = 0.0
 
         for session in self._sessions:
@@ -40,6 +49,16 @@ class StreamingPlatform:
 
 #q2 avg_unique_tracks_per_premium_user
     def avg_unique_tracks_per_premium_user(self,days: int = 30) -> float:
+        """
+                Calculate the average number of unique tracks listened  by premium users
+                within the last given number of days.
+
+                Args:
+                    days: Number of recent days to include.
+
+                Returns:
+                    float: Average number of unique tracks per premium user.
+                """
         premium_users = [
             user for user in self._users.values()
             if isinstance(user, PremiumUser)
@@ -64,6 +83,12 @@ class StreamingPlatform:
         return total_unique_tracks / len(premium_users)
 #q3 track_with_most_distinct_listeners
     def track_with_most_distinct_listeners(self) -> Track | None:
+        """
+              find the track listened to by the most high number of distinct users.
+
+              returns: Track | None: The track with the most distinct listeners,
+                  or None if there are no sessions.
+              """
         if not self._sessions:
             return None
 
@@ -82,6 +107,13 @@ class StreamingPlatform:
         return self._catalogue.get(best_track_id)
 #q4 avg_session_duration_by_user_type
     def avg_session_duration_by_user_type(self) -> list[tuple[str, float]]:
+        """
+              calculate average session duration for each user type.
+
+              returns:
+                  list[tuple[str, float]]: Tuples of user type name and average
+                  session duration in seconds, sorted in the descending order.
+              """
         times={}
         for session in self._sessions:
             user_type = type(session.user).__name__
@@ -107,6 +139,15 @@ class StreamingPlatform:
 
 #q5 total_listening_time_underage_sub_users_minutes
     def total_listening_time_underage_sub_users_minutes(self, age_threshold: int = 18) -> float:
+        """
+               Calculate total listening time for the family members below a given age.
+
+               Args:
+                   age_threshold: the maximum age threshold.
+
+               Returns:
+                   float: the total listening time in minutes.
+               """
         return sum(
             s.duration_listened_seconds / 60.0
             for s in self._sessions
@@ -115,6 +156,18 @@ class StreamingPlatform:
 
 #q6 top_artists_by_listening_time
     def top_artists_by_listening_time(self, n: int = 5) -> list[tuple[Artist, float]]:
+        """
+                return the top artists ranked by total listening time.
+
+                only song listening sessions are counted.
+
+                args:
+                    n: the maximum number of artists to return.
+
+                returns:
+                    list[tuple[Artist, float]]: Tuples of artist and total listening
+                    time in minutes, sorted in descending order.
+                """
         artist_times = {}
 
         for s in self._sessions:
@@ -127,6 +180,17 @@ class StreamingPlatform:
         return sorted_artists[:n]
 #q7 user_top_genre
     def user_top_genre(self, user_id: str) -> tuple[str, float] | None :
+        """
+                it finds the genre a user listened to the most and its percentage share.
+
+                args:
+                    user_id: ID of the user.
+
+                returns:
+                    tuple[str, float] | None: The top genre and its percentage of the
+                    user's total listening time, or None if the user does not exist
+                    or has no sessions.
+                """
         user = self._users.get(user_id)
         if not user or not user.sessions:
             return None
@@ -148,8 +212,12 @@ class StreamingPlatform:
 
         return top_genre, (top_time / total) * 100
 #q8 collaborative_playlists_with_many_artists
-    def collaborative_playlists_with_many_artists(self,threshold: int = 3) -> list[CollaborativePlaylist]:
 
+    def collaborative_playlists_with_many_artists(self,threshold: int = 3) -> list[CollaborativePlaylist]:
+            """"
+            return collaborative playlists containing tracks by more than a given number of unique artists.
+            args: threshold: the minimum number of unique artists required.
+            returns: list[CollaborativePlaylist]: matching collaborative playlists."""
             result = []
 
             for playlist in self._playlists.values():
@@ -168,6 +236,12 @@ class StreamingPlatform:
 
 #q9 avg_tracks_per_playlist_type
     def avg_tracks_per_playlist_type(self) -> dict[str, float] :
+        """
+                Calculate the average number of tracks for normal playlists and
+                collaborative playlists.
+
+                returns:dict[str, float]: Average track counts for each playlist type.
+                """
         p_total = p_count = 0
         cp_total = cp_count = 0
 
@@ -185,6 +259,13 @@ class StreamingPlatform:
         }
 #q10 users_who_completed_albums
     def users_who_completed_albums(self) -> list[tuple[User, list[str]]]:
+        """
+               find users who have listened to every track of at least one album.
+
+               returns:
+                   list[tuple[User, list[str]]]: tuples containing the user and the
+                   titles of albums they completed.
+               """
         results = []
         for user in self.all_users():
             user_listened_ids = user.unique_tracks_listened()
